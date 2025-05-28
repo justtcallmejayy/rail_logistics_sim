@@ -53,6 +53,39 @@ app.get("/shipments/:id", (req, res) => {
     res.json(row);
   });
 });
+// GET all cargo items (with optional shipment_id filter)
+app.get("/cargo", (req, res) => {
+  const { shipment_id } = req.query;
+  let sql = "SELECT * FROM cargo_items";
+  const params = [];
+
+  if (shipment_id) {
+    sql += " WHERE shipment_id = ?";
+    params.push(shipment_id);
+  }
+
+  db.all(sql, params, (err, rows) => {
+    if (err) {
+      console.error("Error querying cargo items:", err.message);
+      return res.status(500).json({ error: "Failed to fetch cargo items" });
+    }
+    res.json(rows);
+  });
+});
+
+// GET a single cargo item by ID
+app.get("/cargo/:id", (req, res) => {
+  const { id } = req.params;
+  const sql = "SELECT * FROM cargo_items WHERE id = ?";
+  db.get(sql, [id], (err, row) => {
+    if (err) {
+      console.error("Error fetching cargo item:", err.message);
+      return res.status(500).json({ error: "Failed to fetch cargo item" });
+    }
+    if (!row) return res.status(404).json({ error: "Cargo item not found" });
+    res.json(row);
+  });
+});
 
 app.listen(PORT, () => {
   console.log(`Server listening on http://localhost:${PORT}`);
