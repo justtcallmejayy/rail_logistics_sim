@@ -3,6 +3,12 @@ import db from "./db.js";
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Initialize the EJS
+// view engine
+app.set("view engine", "ejs");
+app.set("views", "./views");
+
+
 // middleware to parse JSON bodies
 app.use(express.json());
 
