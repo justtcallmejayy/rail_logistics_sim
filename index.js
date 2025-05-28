@@ -1,13 +1,22 @@
 import express from "express";
+import expressLayouts from "express-ejs-layouts";
+import methodOverride from "method-override";
 import db from "./db.js";
-const app = express();
-const PORT = process.env.PORT || 3000;
 
-// Initialize the EJS
-// view engine
+const app = express();
+
+// view engine setup
 app.set("view engine", "ejs");
 app.set("views", "./views");
+app.set("layout", "layouts/main");
+app.use(expressLayouts);
 
+// body parsing & method override
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(methodOverride("_method"));
+
+const PORT = process.env.PORT || 3000;
 
 // middleware to parse JSON bodies
 app.use(express.json());
@@ -123,6 +132,39 @@ app.get("/repairs/:id", (req, res) => {
     }
     if (!row) return res.status(404).json({ error: "Repair record not found" });
     res.json(row);
+  });
+});
+
+// index.js
+
+app.use(methodOverride("_method")); // enable HTML forms to fake PUT/DELETE
+
+// Render the trains page
+app.get("/ui/trains", (req, res) => {
+  db.all("SELECT * FROM trains", [], (err, rows) => {
+    if (err) return res.status(500).send("Database error");
+    res.render("trains", { trains: rows });
+  });
+});
+
+// Handle new train form submission
+app.post("/ui/trains", (req, res) => {
+  const { train_number, model, capacity } = req.body;
+  db.run(
+    `INSERT INTO trains (train_number, model, capacity) VALUES (?, ?, ?)`,
+    [train_number, model, capacity],
+    (err) => {
+      if (err) console.error(err);
+      res.redirect("/ui/trains");
+    }
+  );
+});
+
+// Handle train deletion (via method-override)
+app.delete("/ui/trains/:id", (req, res) => {
+  db.run(`DELETE FROM trains WHERE id = ?`, [req.params.id], (err) => {
+    if (err) console.error(err);
+    res.redirect("/ui/trains");
   });
 });
 
