@@ -1,6 +1,6 @@
-// index.js for the entry point of the Rail Logistics Simulation API
+import './db.js';
 import express from 'express';
-
+import './db.js';
 const app = express();
 const PORT = process.env.PORT || 3000;
 
