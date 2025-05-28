@@ -86,6 +86,39 @@ app.get("/cargo/:id", (req, res) => {
     res.json(row);
   });
 });
+// GET all repair history (with optional train_id filter)
+app.get("/repairs", (req, res) => {
+  const { train_id } = req.query;
+  let sql = "SELECT * FROM repair_history";
+  const params = [];
+
+  if (train_id) {
+    sql += " WHERE train_id = ?";
+    params.push(train_id);
+  }
+
+  db.all(sql, params, (err, rows) => {
+    if (err) {
+      console.error("Error querying repairs:", err.message);
+      return res.status(500).json({ error: "Failed to fetch repair history" });
+    }
+    res.json(rows);
+  });
+});
+
+// GET a single repair record by ID
+app.get("/repairs/:id", (req, res) => {
+  const { id } = req.params;
+  const sql = "SELECT * FROM repair_history WHERE id = ?";
+  db.get(sql, [id], (err, row) => {
+    if (err) {
+      console.error("Error fetching repair record:", err.message);
+      return res.status(500).json({ error: "Failed to fetch repair record" });
+    }
+    if (!row) return res.status(404).json({ error: "Repair record not found" });
+    res.json(row);
+  });
+});
 
 app.listen(PORT, () => {
   console.log(`Server listening on http://localhost:${PORT}`);
