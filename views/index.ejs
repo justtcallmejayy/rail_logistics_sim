@@ -1,0 +1,88 @@
+<!-- This is an index.ejs file for home page render  -->
+<% /* views/index.ejs */ %>
+
+<div class="text-center py-5">
+  <h1 class="display-4">🚂 Rail Logistics Simulator</h1>
+  <p class="lead">
+    Simulate shipments, monitor cargo, track repairs—and have fun!
+  </p>
+  <button id="enter-btn" class="btn btn-primary btn-lg mt-3">
+    Enter the Depot
+  </button>
+</div>
+
+<div class="container mb-5">
+  <div class="row g-4">
+    <div class="col-md-4">
+      <div class="card h-100 text-center">
+        <div class="card-body">
+          <h5 class="card-title">Trains</h5>
+          <p class="card-text">Manage your fleet of locomotives.</p>
+          <a href="/ui/trains" class="btn btn-outline-dark">Go →</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card h-100 text-center">
+        <div class="card-body">
+          <h5 class="card-title">Shipments</h5>
+          <p class="card-text">Track each train’s cargo runs.</p>
+          <a href="/ui/shipments" class="btn btn-outline-dark">Go →</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card h-100 text-center">
+        <div class="card-body">
+          <h5 class="card-title">Repairs</h5>
+          <p class="card-text">View maintenance history.</p>
+          <a href="/ui/repairs" class="btn btn-outline-dark">Go →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Easter-Egg Toast -->
+<div class="toast-container position-fixed top-0 end-0 p-3">
+  <div
+    id="rail-toast"
+    class="toast"
+    role="alert"
+    aria-live="assertive"
+    aria-atomic="true"
+    data-bs-delay="4000"
+  >
+    <div class="toast-header">
+      <strong class="me-auto">🚆 Did you know?</strong>
+      <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+    </div>
+    <div class="toast-body" id="toast-body"></div>
+  </div>
+</div>
+
+<script>
+  // Navigate into the CRUD UI
+  document
+    .getElementById("enter-btn")
+    .addEventListener("click", () => (window.location.href = "/ui/trains"));
+
+  // Fetch a random joke when you click the brand icon
+  const brand = document.querySelector(".navbar-brand");
+  brand.addEventListener("click", async (e) => {
+    e.preventDefault();
+    try {
+      const res = await fetch(
+        "https://official-joke-api.appspot.com/random_joke"
+      );
+      const { setup, punchline } = await res.json();
+      document.getElementById(
+        "toast-body"
+      ).textContent = `${setup} — ${punchline}`;
+      const toast = new bootstrap.Toast(document.getElementById("rail-toast"));
+      toast.show();
+    } catch (err) {
+      console.error("Joke API error", err);
+    }
+  });
+</script>
