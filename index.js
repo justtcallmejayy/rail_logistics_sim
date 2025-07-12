@@ -23,7 +23,8 @@ app.use(express.json());
 
 // a simple health check
 app.get("/", (req, res) => {
-  res.send("🚂 Rail Logistics Simulation API is up!");
+  // res.send("🚂 Rail Logistics Simulation API is up! <a href='/ui/trains'>Go to UI</a>");
+  res.render("index", { title: "Rail Logistics Simulation" });
 });
 app.get("/trains", (req, res) => {
   const sql = "SELECT * FROM trains";
